@@ -80,18 +80,24 @@ sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
 JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 
+# CNI plugins
+curl -L -o cni-plugins.tgz "https://github.com/containernetworking/plugins/releases/download/v1.0.0/cni-plugins-linux-$( [ $(uname -m) = aarch64 ] && echo arm64 || echo amd64)"-v1.0.0.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
+
+sudo modprobe br_netfilter
+echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-arptables
+echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-ip6tables
+echo 1 | sudo tee /proc/sys/net/bridge/bridge-nf-call-iptables
+
 # Install phase finish ---------------------------------------
 
-echo "Install complete"
-
-# Server setup phase begin -----------------------------------
-SERVER_COUNT=${server_count}
 RETRY_JOIN="${retry_join}"
+DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`)
 
-sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/nomad.hcl
-sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/nomad.hcl
-sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/nomad.hcl
-sudo cp $CONFIGDIR/nomad.hcl $NOMADCONFIGDIR
+sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/nomad_client.hcl
+sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/nomad_client.hcl
+sudo cp $CONFIGDIR/nomad_client.hcl $NOMADCONFIGDIR/nomad.hcl
 sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
 sudo systemctl enable nomad.service

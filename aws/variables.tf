@@ -69,3 +69,14 @@ variable "client_instance_type" {
   description = "Instance type for the worker nodes"
 }
 
+variable "client_root_block_device_size" {
+  type        = number
+  default     = 20
+  description = "Size of the root block device for the worker plane nodes"
+}
+
+variable "client_data_block_device_size" {
+  type        = number
+  default     = 50
+  description = "Size of the data block device for the worker plane nodes"
+}
