@@ -59,7 +59,7 @@ variable "server_root_block_device_size" {
 
 variable "client_count" {
   type        = number
-  default     = 2
+  default     = 6
   description = "Number of worker nodes"
 }
 

@@ -1,6 +1,6 @@
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"]
+  owners      = ["099720109477"] # Canonical
 
   filter {
     name   = "name"
@@ -151,6 +151,8 @@ resource "aws_instance" "server" {
   instance_type          = var.server_instance_type
   key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.allow_all_internal.id]
+  subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
+  availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.server_count
 
   connection {
@@ -209,6 +211,8 @@ resource "aws_instance" "client" {
   instance_type          = var.client_instance_type
   key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
+  subnet_id              = module.vpc.private_subnets[count.index % length(module.vpc.private_subnets)]
+  availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.client_count
 
   connection {
