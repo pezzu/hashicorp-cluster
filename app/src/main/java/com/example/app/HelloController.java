@@ -6,9 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    // This method will respond to GET requests at "/hello"
     @GetMapping("/")
     public String sayHello() {
         return "Hello";
+    }
+
+    @GetMapping("/version")
+    public String getVersion() {
+        return "App verison is " + getClass().getPackage().getImplementationVersion();
     }
 }
