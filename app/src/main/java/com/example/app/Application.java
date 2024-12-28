@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SpringBootApplication
 public class Application implements ApplicationListener<WebServerInitializedEvent> {
 
+
     @Autowired
     private PortService portService;@Override
 
@@ -18,6 +19,12 @@ public class Application implements ApplicationListener<WebServerInitializedEven
     }
 
     public static void main(String[] args) {
+        String port = System.getenv("PORT");
+        if(port == null) {
+            port = "8080";
+        }
+        System.setProperty("server.port", port);
+
         SpringApplication.run(Application.class, args);
     }
 }
