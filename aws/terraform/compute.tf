@@ -1,28 +1,3 @@
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-}
-
 locals {
   retry_join = "provider=aws tag_key=NomadJoinTag tag_value=auto-join"
 }
@@ -147,7 +122,7 @@ resource "aws_key_pair" "generated_key" {
 }
 
 resource "aws_instance" "server" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = var.ami
   instance_type          = var.server_instance_type
   key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.allow_all_internal.id]
@@ -155,12 +130,12 @@ resource "aws_instance" "server" {
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.server_count
 
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = tls_private_key.private_key.private_key_pem
-    host        = self.public_ip
-  }
+  # connection {
+  #   type        = "ssh"
+  #   user        = "ubuntu"
+  #   private_key = tls_private_key.private_key.private_key_pem
+  #   host        = self.public_ip
+  # }
 
   # NomadJoinTag is necessary for nodes to automatically join the cluster
   tags = merge(
@@ -181,16 +156,16 @@ resource "aws_instance" "server" {
     delete_on_termination = "true"
   }
 
-  provisioner "remote-exec" {
-    inline = ["sudo mkdir -p /ops", "sudo chmod 777 -R /ops"]
-  }
+  # provisioner "remote-exec" {
+  #   inline = ["sudo mkdir -p /ops", "sudo chmod 777 -R /ops"]
+  # }
 
-  provisioner "file" {
-    source      = "../shared"
-    destination = "/ops"
-  }
+  # provisioner "file" {
+  #   source      = "../shared"
+  #   destination = "/ops"
+  # }
 
-  user_data = templatefile("../shared/data-scripts/server/user-data.sh", {
+  user_data = templatefile("../shared/scripts/server.sh", {
     server_count  = var.server_count
     region        = var.region
     cloud_env     = "aws"
@@ -207,7 +182,7 @@ resource "aws_instance" "server" {
 }
 
 resource "aws_instance" "client" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = var.ami
   instance_type          = var.client_instance_type
   key_name               = aws_key_pair.generated_key.key_name
   vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
@@ -215,12 +190,12 @@ resource "aws_instance" "client" {
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.client_count
 
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = tls_private_key.private_key.private_key_pem
-    host        = self.public_ip
-  }
+  # connection {
+  #   type        = "ssh"
+  #   user        = "ubuntu"
+  #   private_key = tls_private_key.private_key.private_key_pem
+  #   host        = self.public_ip
+  # }
 
   # NomadJoinTag is necessary for nodes to automatically join the cluster
   tags = merge(
@@ -248,16 +223,7 @@ resource "aws_instance" "client" {
     delete_on_termination = "true"
   }
 
-  provisioner "remote-exec" {
-    inline = ["sudo mkdir -p /ops", "sudo chmod 777 -R /ops"]
-  }
-
-  provisioner "file" {
-    source      = "../shared"
-    destination = "/ops"
-  }
-
-  user_data = templatefile("../shared/data-scripts/client/user-data.sh", {
+  user_data = templatefile("../shared/scripts/client.sh", {
     region        = var.region
     cloud_env     = "aws"
     retry_join    = local.retry_join

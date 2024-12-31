@@ -17,6 +17,7 @@ variable "region" {
 
 #  Network
 variable "vpc_cidr" {
+  type        = string
   default     = "10.0.0.0/16"
   description = "VPC cidr"
 }
@@ -34,11 +35,18 @@ variable "vpc_public_subnets" {
 }
 
 variable "allowlist_ip" {
+  type        = string
   description = "IP to allow access for the security groups (set 0.0.0.0/0 for world)"
   default     = "0.0.0.0/0"
 }
 
 #Compute
+variable "ami" {
+  type        = string
+  description = "AMI to use for the control plane and worker nodes"
+}
+
+
 variable "server_count" {
   type        = number
   default     = 3

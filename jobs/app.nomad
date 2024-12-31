@@ -23,6 +23,7 @@ job "webapp" {
 
       artifact {
         source = "https://storage.googleapis.com/hashistack/hashiapp/v1.0.0/hashiapp"
+        destination = "local/"
         options {
           checksum = "sha256:d2127dd0356241819e4db5407284a6d100d800ebbf37b4b2b8e9aefc97f48636"
         }
