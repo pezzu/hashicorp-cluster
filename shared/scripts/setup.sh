@@ -28,6 +28,7 @@ sudo apt-get install -yq consul="${CONSULVERSION}*" \
 
 # Dependencies
 sudo apt-get install -yq software-properties-common
+sudo apt-get install -yq dmidecode
 sudo apt-get update
 sudo apt-get install -yq unzip tree redis jq curl tmux openjdk-8-jdk
 
