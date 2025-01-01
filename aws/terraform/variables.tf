@@ -3,16 +3,9 @@ variable "cluster_name" {
   description = "Name of the Hashicorp cluster"
 }
 
-variable "nomad_version" {
-  type        = string
-  description = "Version of Nomad to install"
-  default     = "1.9.3"
-}
-
 variable "region" {
   type        = string
   description = "AWS region"
-  default     = "us-east-1"
 }
 
 #  Network
@@ -46,7 +39,6 @@ variable "ami" {
   description = "AMI to use for the control plane and worker nodes"
 }
 
-
 variable "server_count" {
   type        = number
   default     = 3
@@ -67,7 +59,7 @@ variable "server_root_block_device_size" {
 
 variable "client_count" {
   type        = number
-  default     = 6
+  default     = 3
   description = "Number of worker nodes"
 }
 
