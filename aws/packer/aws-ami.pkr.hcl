@@ -9,7 +9,7 @@ packer {
 
 source "amazon-ebs" "hashistack" {
     region        = "us-east-1"
-    instance_type = "t2.medium"
+    instance_type = "t2.small"
     ssh_username  = "ubuntu"
     ami_name      = "hashistack {{timestamp}}"
 
@@ -38,11 +38,11 @@ build {
   }
 
   provisioner "file" {
-    source      = "../shared"
+    source      = "../../shared"
     destination = "/ops"
   }
 
   provisioner "shell" {
-    script = "../shared/scripts/setup.sh"
+    script = "../../shared/scripts/setup.sh"
   }
 }
