@@ -56,28 +56,63 @@ resource "aws_security_group" "server_lb" {
   }
 }
 
-resource "aws_elb" "server_lb" {
-  name      = "${var.cluster_name}-server-lb"
-  subnets   = distinct(aws_instance.server.*.subnet_id)
-  internal  = false
-  instances = aws_instance.server.*.id
+# resource "aws_elb" "server_lb" {
+#   name      = "${var.cluster_name}-server-lb"
+#   subnets   = distinct(aws_instance.server.*.subnet_id)
+#   internal  = false
+#   instances = aws_instance.server.*.id
+
+#   # Nomad
+#   listener {
+#     instance_port     = 4646
+#     instance_protocol = "http"
+#     lb_port           = 4646
+#     lb_protocol       = "http"
+#   }
+
+#   # Consul
+#   listener {
+#     instance_port     = 8500
+#     instance_protocol = "http"
+#     lb_port           = 8500
+#     lb_protocol       = "http"
+#   }
+
+#   security_groups = [aws_security_group.server_lb.id]
+# }
+
+resource "aws_security_group" "server_ui_ingress" {
+  name   = "${var.cluster_name}-ui-ingress"
+  vpc_id = module.vpc.vpc_id
 
   # Nomad
-  listener {
-    instance_port     = 4646
-    instance_protocol = "http"
-    lb_port           = 4646
-    lb_protocol       = "http"
+  ingress {
+    from_port       = 4646
+    to_port         = 4646
+    protocol        = "tcp"
+    cidr_blocks     = [var.allowlist_ip]
+    security_groups = [aws_security_group.server_lb.id]
   }
-
   # Consul
-  listener {
-    instance_port     = 8500
-    instance_protocol = "http"
-    lb_port           = 8500
-    lb_protocol       = "http"
+  ingress {
+    from_port       = 8500
+    to_port         = 8500
+    protocol        = "tcp"
+    cidr_blocks     = [var.allowlist_ip]
+    security_groups = [aws_security_group.server_lb.id]
   }
 
-  security_groups = [aws_security_group.server_lb.id]
-}
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

@@ -3,59 +3,6 @@ locals {
 }
 
 
-resource "aws_security_group" "nomad_ui_ingress" {
-  name   = "${var.cluster_name}-ui-ingress"
-  vpc_id = module.vpc.vpc_id
-
-  # Nomad
-  ingress {
-    from_port   = 4646
-    to_port     = 4646
-    protocol    = "tcp"
-    cidr_blocks = [var.allowlist_ip]
-  }
-
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    self      = true
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "ssh_ingress" {
-  name   = "${var.cluster_name}-ssh-ingress"
-  vpc_id = module.vpc.vpc_id
-
-  # SSH
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.allowlist_ip]
-  }
-
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    self      = true
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
 resource "aws_security_group" "allow_all_internal" {
   name   = "${var.cluster_name}-allow-all-internal"
@@ -115,7 +62,7 @@ resource "aws_security_group" "clients_ingress" {
 resource "aws_instance" "server" {
   ami                    = var.ami
   instance_type          = var.server_instance_type
-  vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.allow_all_internal.id]
+  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.allow_all_internal.id]
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.server_count
@@ -156,7 +103,7 @@ resource "aws_instance" "server" {
 resource "aws_instance" "client" {
   ami                    = var.ami
   instance_type          = var.client_instance_type
-  vpc_security_group_ids = [aws_security_group.nomad_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
+  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.client_count
