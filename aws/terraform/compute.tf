@@ -23,41 +23,7 @@ resource "aws_security_group" "allow_all_internal" {
   }
 }
 
-resource "aws_security_group" "clients_ingress" {
-  name   = "${var.cluster_name}-clients-ingress"
-  vpc_id = module.vpc.vpc_id
 
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    self      = true
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Add application ingress rules here
-  # These rules are applied only to the client nodes
-
-  # nginx example
-  # ingress {
-  #   from_port   = 80
-  #   to_port     = 80
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-  ingress {
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
 resource "aws_instance" "server" {
   ami                    = var.ami
