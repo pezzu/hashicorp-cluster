@@ -62,7 +62,7 @@ resource "aws_security_group" "clients_ingress" {
 resource "aws_instance" "server" {
   ami                    = var.ami
   instance_type          = var.server_instance_type
-  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.allow_all_internal.id]
+  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.allow_all_internal.id]
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.server_count
@@ -103,7 +103,7 @@ resource "aws_instance" "server" {
 resource "aws_instance" "client" {
   ami                    = var.ami
   instance_type          = var.client_instance_type
-  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
+  vpc_security_group_ids = [aws_security_group.server_ui_ingress.id, aws_security_group.ssh_ingress.id, aws_security_group.clients_ingress.id, aws_security_group.allow_all_internal.id]
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   availability_zone      = module.vpc.azs[count.index % length(module.vpc.azs)]
   count                  = var.client_count
