@@ -37,14 +37,14 @@ job "webapp" {
 
       service {
         name = "webapp"
-        tags = ["urlprefix-/app"] // This is a tag that will be used by the Fabio load balancer
+        tags = ["urlprefix-/app"]
         port = "http"
         check {
           type = "http"
           name = "healthz"
-          interval = "15s"
+          interval = "10s"
           timeout = "5s"
-          path = "/healthz"
+          path = "/app/healthz"
         }
       }
     }

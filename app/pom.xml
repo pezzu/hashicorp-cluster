@@ -6,7 +6,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>web-app</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>web-app</name>
