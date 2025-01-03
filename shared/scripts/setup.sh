@@ -22,7 +22,8 @@ sudo apt-get update && sudo apt-get install gpg
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt-get update
-sudo apt-get install -yq consul="${CONSULVERSION}*" \
+sudo apt-get install -yq \
+                    consul="${CONSULVERSION}*" \
                     vault="${VAULTVERSION}*" \
                     nomad="${NOMADVERSION}*"
 
@@ -30,7 +31,7 @@ sudo apt-get install -yq consul="${CONSULVERSION}*" \
 sudo apt-get install -yq software-properties-common
 sudo apt-get install -yq dmidecode
 sudo apt-get update
-sudo apt-get install -yq unzip tree redis jq curl tmux openjdk-8-jdk
+sudo apt-get install -yq unzip tree jq curl
 
 # Disable the firewall
 sudo ufw disable || echo "ufw not installed"
@@ -52,3 +53,7 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install -yq docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+# Java
+curl -O https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb
+sudo apt-get install -yq ./jdk-21_linux-x64_bin.deb
