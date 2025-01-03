@@ -18,15 +18,12 @@ job "webapp" {
       driver = "java"
       config {
         jar_path    = "local/web-app.jar"
-        jvm_options = ["-Xms32m", "-Xmx64m"]
+        jvm_options = ["-Xms32m", "-Xmx128m"]
       }
 
       artifact {
-        source = "https://storage.googleapis.com/hashistack/hashiapp/v1.0.0/hashiapp"
+        source = "https://install-10360a17-09b0-4f50-93b4-e8cc2410a4e8.s3.us-east-1.amazonaws.com/app/v1.0.0/web-app.jar"
         destination = "local/"
-        options {
-          checksum = "sha256:d2127dd0356241819e4db5407284a6d100d800ebbf37b4b2b8e9aefc97f48636"
-        }
       }
 
       env {
@@ -35,7 +32,7 @@ job "webapp" {
 
       resources {
         cpu = 500
-        memory = 64
+        memory = 256
       }
 
       service {
