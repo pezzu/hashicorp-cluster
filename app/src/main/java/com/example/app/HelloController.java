@@ -6,8 +6,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/app")
@@ -19,25 +28,46 @@ public class HelloController {
         this.portService = portService;
     }
 
-    @GetMapping("/greeting")
+    @GetMapping("/")
     public String sayHello() {
-        return "Hello\n";
+        return "Hello from App\n";
     }
 
     @GetMapping("/version")
-    public String getVersion() {
-        return "app verison is " + getClass().getPackage().getImplementationVersion() + "\n";
+    public Map<String, String> getVersion() {
+        return Map.of("version", getClass().getPackage().getImplementationVersion());
     }
 
     @GetMapping("/server-info")
-    public String getServerInfo() throws UnknownHostException {
+    public Map<String, String> getServerInfo() throws UnknownHostException {
         String hostname = InetAddress.getLocalHost().getHostName();
 
-        return "app address is " + hostname + ":" + portService.getPort() + "\n";
+        return Map.of("hostname", hostname + ":" + portService.getPort());
+    }
+
+    @GetMapping("/params")
+    public Map<String, Object> getParams() throws URISyntaxException{
+        Path paramsPath = Paths.get(getClass().getProtectionDomain().getPermissions().elements().nextElement().getName()).getParent();
+
+        try {
+            List<String> params = Files.readAllLines(paramsPath.resolve("params.txt"));
+            Map<String, Object> result = new HashMap<>();
+            for (String param : params) {
+                String[] parts = param.split(":");
+                result.put(parts[0], parts[1]);
+            }
+            return result;
+        }
+        catch (IOException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "params.txt not found");
+            return error;
+        }
     }
 
     @GetMapping("/healthz")
     @ResponseStatus(HttpStatus.OK)
-    public void healthz() {
+    public Map<String, String> healthz() {
+        return Map.of("status", "ok");
     }
 }
