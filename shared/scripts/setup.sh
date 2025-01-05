@@ -17,6 +17,7 @@ sudo apt-get install -yq  apt-utils
 CONSULVERSION=1.20.1
 VAULTVERSION=1.18.3
 NOMADVERSION=1.9.4
+CONSULTEMPLATEVERSION=0.39.1
 
 sudo apt-get update && sudo apt-get install gpg
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -25,7 +26,8 @@ sudo apt-get update
 sudo apt-get install -yq \
                     consul="${CONSULVERSION}*" \
                     vault="${VAULTVERSION}*" \
-                    nomad="${NOMADVERSION}*"
+                    nomad="${NOMADVERSION}*" \
+                    consul-template="${CONSULTEMPLATEVERSION}*"
 
 # Dependencies
 sudo apt-get install -yq software-properties-common

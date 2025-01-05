@@ -14,6 +14,7 @@ CONFIGDIR=/ops/shared/config
 CONSULCONFIGDIR=/etc/consul.d
 VAULTCONFIGDIR=/etc/vault.d
 NOMADCONFIGDIR=/etc/nomad.d
+CONSULTEMPLATECONFIGDIR=/etc/consul-template.d
 HOME_DIR=ubuntu
 
 # Wait for network
@@ -66,6 +67,10 @@ sudo cp $CONFIGDIR/nomad.hcl $NOMADCONFIGDIR
 sudo systemctl enable nomad.service --now
 sleep 10
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
+
+# Consul Template
+sudo cp $CONFIGDIR/consul-template.hcl $CONSULTEMPLATECONFIGDIR/consul-template.hcl
+sudo cp $CONFIGDIR/consul-template.service /etc/systemd/system/consul-template.service
 
 # Add hostname to /etc/hosts
 echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
