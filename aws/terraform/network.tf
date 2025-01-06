@@ -2,7 +2,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = ">= 5.16.0"
 
-  name = "${var.cluster_name}-vpc"
+  name = "${var.stack_name}-vpc"
   cidr = var.vpc_cidr
 
   azs             = [join("", [var.region, "a"]), join("", [var.region, "b"]), join("", [var.region, "c"])]
@@ -19,17 +19,17 @@ module "vpc" {
   map_public_ip_on_launch = true
 
   tags = {
-    Environment = var.cluster_name
+    Environment = var.stack_name
   }
 
   vpc_tags = {
-    Name        = "${var.cluster_name}-vpc"
-    Environment = var.cluster_name
+    Name        = "${var.stack_name}-vpc"
+    Environment = var.stack_name
   }
 }
 
 resource "aws_security_group" "server_lb" {
-  name   = "${var.cluster_name}-server-lb"
+  name   = "${var.stack_name}-server-lb"
   vpc_id = module.vpc.vpc_id
 
   # Nomad
@@ -57,7 +57,7 @@ resource "aws_security_group" "server_lb" {
 }
 
 # resource "aws_elb" "server_lb" {
-#   name      = "${var.cluster_name}-server-lb"
+#   name      = "${var.stack_name}-server-lb"
 #   subnets   = distinct(aws_instance.server.*.subnet_id)
 #   internal  = false
 #   instances = aws_instance.server.*.id
@@ -82,7 +82,7 @@ resource "aws_security_group" "server_lb" {
 # }
 
 resource "aws_security_group" "server_ui_ingress" {
-  name   = "${var.cluster_name}-ui-ingress"
+  name   = "${var.stack_name}-ui-ingress"
   vpc_id = module.vpc.vpc_id
 
   # Nomad
@@ -118,7 +118,7 @@ resource "aws_security_group" "server_ui_ingress" {
 }
 
 resource "aws_security_group" "ssh_ingress" {
-  name   = "${var.cluster_name}-ssh-ingress"
+  name   = "${var.stack_name}-ssh-ingress"
   vpc_id = module.vpc.vpc_id
 
   # SSH
@@ -145,7 +145,7 @@ resource "aws_security_group" "ssh_ingress" {
 }
 
 resource "aws_security_group" "clients_ingress" {
-  name   = "${var.cluster_name}-clients-ingress"
+  name   = "${var.stack_name}-clients-ingress"
   vpc_id = module.vpc.vpc_id
 
   ingress {

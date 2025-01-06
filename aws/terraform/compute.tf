@@ -5,7 +5,7 @@ locals {
 
 
 resource "aws_security_group" "allow_all_internal" {
-  name   = "${var.cluster_name}-allow-all-internal"
+  name   = "${var.stack_name}-allow-all-internal"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -36,7 +36,7 @@ resource "aws_instance" "server" {
   # NomadJoinTag is necessary for nodes to automatically join the cluster
   tags = merge(
     {
-      "Name" = "${var.cluster_name}-server-${count.index}"
+      "Name" = "${var.stack_name}-server-${count.index}"
     },
     {
       "NomadJoinTag" = "auto-join"
@@ -77,7 +77,7 @@ resource "aws_instance" "client" {
   # NomadJoinTag is necessary for nodes to automatically join the cluster
   tags = merge(
     {
-      "Name" = "${var.cluster_name}-client-${count.index}"
+      "Name" = "${var.stack_name}-client-${count.index}"
     },
     {
       "NomadJoinTag" = "auto-join"

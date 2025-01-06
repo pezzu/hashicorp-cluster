@@ -1,4 +1,4 @@
-variable "cluster_name" {
+variable "stack_name" {
   type        = string
   description = "Name of the Hashicorp cluster"
 }
