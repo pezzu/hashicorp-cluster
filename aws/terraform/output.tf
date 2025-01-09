@@ -10,7 +10,7 @@ output "vault_address" {
   value = "http://${aws_instance.server[0].public_ip}:8200"
 }
 
-output "configuration" {
+output "server_config" {
   value = <<EOF
 UI is available at:
 Nomad  :  http://${aws_instance.server[0].public_ip}:4646/ui
@@ -22,6 +22,10 @@ export NOMAD_ADDR=http://${aws_instance.server[0].public_ip}:4646
 export CONSUL_HTTP_ADDR=http://${aws_instance.server[0].public_ip}:8500
 export VAULT_ADDR=http://${aws_instance.server[0].public_ip}:8200
 EOF
+}
+
+output "client_ip" {
+  value = aws_instance.client[0].public_ip
 }
 
 # output "server_lb_ip" {

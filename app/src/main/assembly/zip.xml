@@ -12,7 +12,7 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>${basedir}/src/main/resources/params.txt</source>
+            <source>${basedir}/src/main/resources/params.tpl</source>
             <outputDirectory>/</outputDirectory>
         </file>
     </files>

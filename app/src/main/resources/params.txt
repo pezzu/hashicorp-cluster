@@ -1,2 +1,0 @@
-param-1: defaultValue-1
-param-2: defaultValue-2

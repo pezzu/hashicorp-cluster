@@ -16,40 +16,34 @@ job "webapp" {
       port "http" {}
     }
 
-    # task "unpack" {
-    #   driver = "exec"
-    #   config {
-    #     command = "ls"
-    #     args = ["-l", "/local/"]
-    #     # args = ["-o", "local/web-app-zip.zip", "-d", "local/"]
-    #   }
-
-    #   artifact {
-    #     source = "https://install-10360a17-09b0-4f50-93b4-e8cc2410a4e8.s3.us-east-1.amazonaws.com/app/v1.0.0/web-app-zip.zip"
-    #     destination = "local/"
-    #   }
-
-    #   resources {
-    #     cpu = 500
-    #     memory = 128
-    #   }
-
-    #   lifecycle {
-    #     hook = "prestart"
-    #     sidecar = false
-    #   }
-    # }
-
-    task "webapp" {
-      driver = "java"
+    task "consul-template" {
+      driver = "exec"
       config {
-        jar_path    = "local/web-app.jar"
-        jvm_options = ["-Xms32m", "-Xmx128m"]
+        command = "/usr/bin/consul-template"
+        args = ["-template", "alloc/scc/params.tpl:alloc/scc/params.txt"]
       }
 
       artifact {
         source = "https://install-10360a17-09b0-4f50-93b4-e8cc2410a4e8.s3.us-east-1.amazonaws.com/app/v1.0.0/web-app-zip.zip"
-        destination = "local/"
+        destination = "alloc/scc"
+      }
+
+      resources {
+        cpu = 100
+        memory = 128
+      }
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+    }
+
+    task "webapp" {
+      driver = "java"
+      config {
+        jar_path    = "alloc/scc/web-app.jar"
+        jvm_options = ["-Xms32m", "-Xmx128m"]
       }
 
       env {
@@ -57,7 +51,7 @@ job "webapp" {
       }
 
       resources {
-        cpu = 500
+        cpu = 700
         memory = 256
       }
 
@@ -69,7 +63,7 @@ job "webapp" {
           type = "http"
           name = "healthz"
           interval = "5s"
-          timeout = "5s"
+          timeout = "1s"
           path = "/app/healthz"
         }
       }
